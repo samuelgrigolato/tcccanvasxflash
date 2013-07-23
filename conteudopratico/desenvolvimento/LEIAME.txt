@@ -1,0 +1,15 @@
+Esse diretório contém a parte prática do trabalho "CONTEÚDO DINÂMICO E INTERATIVO COM HTML5".
+
+Cada diretório corresponde a uma seção da monografia. O diretório "GERAL.imagensdiversas" contém 
+os recursos de imagem que são utilizados por mais de uma seção.
+
+Os seguintes arquivos estão disponibilizados dentro de cada pasta:
+
+* CAPXX.<nome da seção>.canvas.html: Página contendo a implementação utilizando Canvas;
+* CAPXX.<nome da seção>.flash.html: Página contendo a implementação utilizando Flash;
+* CAPXX.<nome da seção>.flash.fla: Arquivo fonte resultado da implementação em Flash;
+* CAPXX.<nome da seção>.flash.swf: Construção da implementação em Flash, esse componente é 
+utilizado pela página através do Plugin Flash.
+
+A estrutura de diretórios deve ser mantida para que os exemplos funcionem corretamente, em outras
+palavras, é importante que a pasta "GERAL.imagensdiversas" permaneça no mesmo nível que as demais.

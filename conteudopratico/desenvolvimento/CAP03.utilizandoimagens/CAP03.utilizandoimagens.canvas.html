@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>CAP03 - Utilizando Imagens</title>
+		<style>
+		
+			body {
+			  margin: 0;
+			}
+		
+		</style>
+		<script>
+			
+			function eventoJanelaCarregada() {
+				aplicacaoCanvas();
+			}
+			
+			function aplicacaoCanvas() {
+			
+				var canvas = document.getElementById("canvasUm");
+				
+				if (!canvas || !canvas.getContext) {
+					return;
+				}
+				
+				var canvasLargura = canvas.width;
+				var canvasAltura = canvas.height;
+				var contexto = canvas.getContext("2d");
+				
+				var bolaImagem = new Image();
+				bolaImagem.addEventListener('load', imagemBolaCarregada, false);
+				bolaImagem.src = "../GERAL.imagensdiversas/bola.png";
+				
+				var tabuaImagem = new Image();
+				tabuaImagem.addEventListener('load', imagemTabuaCarregada, false);
+				tabuaImagem.src = "../GERAL.imagensdiversas/tabua.png";
+			
+				renderizaTela();
+				
+				function renderizaTela() {
+					contexto.fillStyle = "#00FF66";
+					contexto.fillRect(0, 0, canvasLargura, canvasAltura);
+				}
+				
+				function imagemBolaCarregada() {
+					var bolaPosicaoX = 140;
+					var bolaPosicaoY = 90;
+					contexto.drawImage(bolaImagem, bolaPosicaoX, bolaPosicaoY);
+				}
+				
+				function imagemTabuaCarregada() {
+					
+					var tabua1PosicaoX = 10;
+					var tabua1PosicaoY = 80;
+					contexto.drawImage(tabuaImagem, tabua1PosicaoX, tabua1PosicaoY);
+					
+					var tabua2PosicaoX = 360;
+					var tabua2PosicaoY = 20;
+					contexto.drawImage(tabuaImagem, tabua2PosicaoX, tabua2PosicaoY);
+					
+				}
+			}
+			
+			window.addEventListener("load", eventoJanelaCarregada, false);
+
+		</script>
+	</head>
+	<body>
+		<div>
+			<canvas id="canvasUm" width="400" height="230">
+				Seu navegador não suporta o objeto Canvas da especificação HTML 5.
+			</canvas>
+		</div>
+	</body>
+</html>

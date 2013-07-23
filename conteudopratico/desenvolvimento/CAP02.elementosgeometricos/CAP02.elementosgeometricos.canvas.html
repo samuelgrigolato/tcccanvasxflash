@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>CAP02 - Elementos Geométricos</title>
+		<style>
+		
+			body {
+			  margin: 0;
+			}
+		
+		</style>
+		<script>
+			
+			function eventoJanelaCarregada() {
+				aplicacaoCanvas();
+			}
+			
+			function aplicacaoCanvas() {
+			
+				var canvas = document.getElementById("canvasUm");
+				
+				if (!canvas || !canvas.getContext) {
+					return;
+				}
+				
+				var canvasLargura = canvas.width;
+				var canvasAltura = canvas.height;
+				var contexto = canvas.getContext("2d");
+			
+				renderizaTela();
+				
+				function renderizaTela() {
+					
+					renderizaFundoDaTela();
+					renderizaLinha();
+					renderizaRetangulo();
+					renderizaCirculo();
+					renderizaTriangulo();
+					
+				}
+				
+				function renderizaFundoDaTela() {
+					contexto.fillStyle = "#FFFF99";
+					contexto.fillRect(0, 0, canvasLargura, canvasAltura);
+				}
+				
+				function renderizaLinha() {
+				
+					contexto.strokeStyle = "#FF0000";
+					contexto.lineWidth = 5;
+					contexto.lineCap = "round";
+					
+					var linhaPosicaoX1 = 200;
+					var linhaPosicaoY1 = 10;
+					var linhaPosicaoX2 = 200;
+					var linhaPosicaoY2 = 220;
+					
+					contexto.beginPath();
+					contexto.moveTo(linhaPosicaoX1, linhaPosicaoY1);
+					contexto.lineTo(linhaPosicaoX2, linhaPosicaoY2);
+					contexto.stroke();
+					contexto.closePath();
+				
+				}
+				
+				function renderizaRetangulo() {
+				
+					contexto.strokeStyle = "#000066";
+					contexto.fillStyle = "#00CCFF";
+					
+					var retanguloX = 10;
+					var retanguloY = 10;
+					var retanguloLargura = 180;
+					var retanguloAltura = 210;
+					contexto.strokeRect(retanguloX, retanguloY, retanguloLargura, retanguloAltura);
+					contexto.fillRect(retanguloX, retanguloY, retanguloLargura, retanguloAltura);
+				
+				}
+				
+				function renderizaCirculo() {
+				
+					contexto.strokeStyle = "#003300";
+					contexto.fillStyle = "#99FF99";
+				
+					var circuloX = 300;
+					var circuloY = 100;
+					var circuloRaio = 90;
+					var circuloAnguloInicial = 0;
+					var circuloAnguloFinal = (Math.PI / 180) * 360; // conversão de graus em radianos
+					contexto.beginPath();
+					contexto.arc(circuloX, circuloY, circuloRaio, circuloAnguloInicial, circuloAnguloFinal);
+					contexto.stroke();
+					contexto.fill();
+					contexto.closePath();
+					
+				}
+				
+				function renderizaTriangulo() {
+					
+					contexto.strokeStyle = "#FF6600";
+					contexto.fillStyle = "#FFCC00";
+					contexto.lineJoin = "round";
+					
+					var trianguloX1 = 210;
+					var trianguloY1 = 190;
+					var trianguloX2 = 390;
+					var trianguloY2 = 220;
+					var trianguloX3 = 210;
+					var trianguloY3 = 220;
+				
+					contexto.beginPath();
+					contexto.moveTo(trianguloX1, trianguloY1);
+					contexto.lineTo(trianguloX2, trianguloY2);
+					contexto.lineTo(trianguloX3, trianguloY3);
+					contexto.closePath();
+					contexto.stroke();
+					contexto.fill();
+				
+				}
+			}
+			
+			window.addEventListener("load", eventoJanelaCarregada, false);
+
+		</script>
+	</head>
+	<body>
+		<div>
+			<canvas id="canvasUm" width="400" height="230">
+				Seu navegador não suporta o objeto Canvas da especificação HTML 5.
+			</canvas>
+		</div>
+	</body>
+</html>

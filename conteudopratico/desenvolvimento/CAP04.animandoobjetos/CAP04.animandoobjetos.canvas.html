@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>CAP04 - Animando Objetos</title>
+		<style>
+		
+			body {
+			  margin: 0;
+			}
+		
+		</style>
+		<script>
+			
+			function eventoJanelaCarregada() {
+				aplicacaoCanvas();
+			}
+			
+			function aplicacaoCanvas() {
+			
+				var canvas = document.getElementById("canvasUm");
+				
+				if (!canvas || !canvas.getContext) {
+					return;
+				}
+				
+				var canvasLargura = canvas.width;
+				var canvasAltura = canvas.height;
+				var contexto = canvas.getContext("2d");
+			
+				var framesPorSegundo = 24;
+				var intervaloEntreFrames = 1000 / framesPorSegundo;
+				
+				var bola = {
+					x: 20
+					, y: 115
+					, anguloEmGraus: 0
+				};
+				
+				var bolaAnimacaoSegundos = 5;
+				var bolaAnimacaoTicks = 1000 / intervaloEntreFrames * bolaAnimacaoSegundos;
+				var bolaAnimacaoXInicial = bola.x;
+				var bolaAnimacaoXDestino = 360;
+				var bolaAnimacaoXPercorrido = bolaAnimacaoXDestino - bolaAnimacaoXInicial;
+				var bolaAnimacaoPixelsPorTick = bolaAnimacaoXPercorrido / bolaAnimacaoTicks;
+				
+				var bolaRotacaoSegundos = 1;
+				var bolaRotacaoTicks = 1000 / intervaloEntreFrames * bolaRotacaoSegundos;
+				var bolaRotacaoGrausPorTick = 360 / bolaRotacaoTicks;
+				
+				var bolaImagem = new Image();
+				bolaImagem.addEventListener('load', imagemBolaCarregada, false);
+				bolaImagem.src = "../GERAL.imagensdiversas/bola.png";
+				
+				function imagemBolaCarregada() {
+					setInterval(loopPrincipal, intervaloEntreFrames);
+				}
+				
+				function loopPrincipal() {
+					atualizaModelo();
+					renderizaTela();
+				}
+				
+				function atualizaModelo() {
+					
+					if (bola.x < bolaAnimacaoXDestino) {
+						bola.x = bola.x + bolaAnimacaoPixelsPorTick;
+					} else {
+						bola.x = bolaAnimacaoXInicial;
+					}
+					
+					if (bola.anguloEmGraus < 360) {
+						bola.anguloEmGraus = bola.anguloEmGraus + bolaRotacaoGrausPorTick;
+					} else {
+						bola.anguloEmGraus = 0;
+					}
+					
+				}
+				
+				function renderizaTela() {
+					renderizaFundoDaTela();
+					renderizaBola();
+				}
+				
+				function renderizaFundoDaTela() {
+					contexto.setTransform(1, 0, 0, 1, 0, 0);
+					contexto.fillStyle = "#00FF66";
+					contexto.fillRect(0, 0, canvasLargura, canvasAltura);
+				}
+				
+				function renderizaBola() {
+					var bolaLargura = bolaImagem.width;
+					var bolaAltura = bolaImagem.height;
+					var bolaPosicaoX = bola.x;
+					var bolaPosicaoY = bola.y;
+					var bolaRotacaoEmRadianos = bola.anguloEmGraus * Math.PI / 180;
+					contexto.setTransform(1, 0, 0, 1, 0, 0);
+					contexto.translate(bolaPosicaoX, bolaPosicaoY);
+					contexto.rotate(bolaRotacaoEmRadianos);
+					contexto.drawImage(bolaImagem, - bolaLargura / 2, - bolaAltura / 2);
+				}
+			}
+			
+			window.addEventListener("load", eventoJanelaCarregada, false);
+
+		</script>
+	</head>
+	<body>
+		<div>
+			<canvas id="canvasUm" width="400" height="230">
+				Seu navegador não suporta o objeto Canvas da especificação HTML 5.
+			</canvas>
+		</div>
+	</body>
+</html>

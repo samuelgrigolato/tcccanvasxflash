@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>APENDICEA - Benchmark</title>
+		<style>
+		
+			body {
+			  margin: 0;
+			}
+		
+		</style>
+		<script>
+			
+			function eventoJanelaCarregada() {
+				aplicacaoCanvas();
+			}
+			
+			function aplicacaoCanvas() {
+			
+				var canvas = document.getElementById("canvasUm");
+				
+				if (!canvas || !canvas.getContext) {
+					return;
+				}
+				
+				var canvasLargura = canvas.width;
+				var canvasAltura = canvas.height;
+				var contexto = canvas.getContext("2d");
+			
+				var contador = 0;
+				var contadorLimite = Math.pow(2, 8);
+				
+				var tempoInicialEmMillis = new Date().getTime();
+				var tempoFinalEmMillis;
+			
+				setInterval(incrementaContador, 0);
+				
+				function incrementaContador() {
+					contador++;
+					if (contador <= contadorLimite) {
+						tempoFinalEmMillis = new Date().getTime();
+						renderizaContador();
+					}
+				}
+				
+				function renderizaContador() {
+				
+					contexto.fillStyle = "#ffff99";
+					contexto.fillRect(0, 0, canvasLargura, canvasAltura);
+					
+					contexto.fillStyle = "#ff0000";
+					contexto.font = "50px Tahoma";
+					
+					var diferencaEmMillis = tempoFinalEmMillis - tempoInicialEmMillis;
+					var mensagem = diferencaEmMillis;
+					var mensagemDimensoes = contexto.measureText(mensagem);
+					var mensagemLargura = mensagemDimensoes.width;
+					var mensagemAlturaEstimada = 28; // não existe forma de obter esse valor exato até o presente momento
+					
+					var mensagemPosicaoX = (canvasLargura / 2) - (mensagemLargura / 2);
+					var mensagemPosicaoY = (canvasAltura / 2) + (mensagemAlturaEstimada / 2);
+					contexto.fillText(mensagem, mensagemPosicaoX, mensagemPosicaoY);
+					
+				}
+			}
+			
+			window.addEventListener("load", eventoJanelaCarregada, false);
+
+		</script>
+	</head>
+	<body>
+		<div>
+			<canvas id="canvasUm" width="400" height="230">
+				Seu navegador não suporta o objeto Canvas da especificação HTML 5.
+			</canvas>
+		</div>
+	</body>
+</html>

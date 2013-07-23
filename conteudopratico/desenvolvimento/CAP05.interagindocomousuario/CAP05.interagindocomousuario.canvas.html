@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>CAP05 - Interagindo com o Usuário</title>
+		<style>
+		
+			body {
+			  margin: 0;
+			}
+		
+		</style>
+		<script>
+			
+			function eventoJanelaCarregada() {
+				aplicacaoCanvas();
+			}
+			
+			function aplicacaoCanvas() {
+			
+				var canvas = document.getElementById("canvasUm");
+				
+				if (!canvas || !canvas.getContext) {
+					return;
+				}
+				
+				var canvasLargura = canvas.width;
+				var canvasAltura = canvas.height;
+				var contexto = canvas.getContext("2d");
+				
+				var teclaWKeyCode = 87;
+				var teclaSKeyCode = 83;
+				
+				var framesPorSegundo = 24;
+				var intervaloEntreFrames = 1000 / framesPorSegundo;
+				
+				var tabuaYMinimo = 10;
+				var tabuaYMaximo = 90;
+				var tabuaYDeltaPorTick = 2;
+
+				var teclasPressionadas = {
+					w: false
+					, s: false
+				};
+				
+				var tabua = {
+					x: 20
+					, y: 30
+				};
+				
+				var tabuaImagem = new Image();
+				tabuaImagem.addEventListener('load', imagemTabuaCarregada, false);
+				tabuaImagem.src = "../GERAL.imagensdiversas/tabua.png";
+			
+				function imagemTabuaCarregada() {
+					setInterval(loopPrincipal, intervaloEntreFrames);
+				}
+				
+				window.addEventListener("keydown", onKeyDown, true);
+				window.addEventListener("keyup", onKeyUp, true);
+				
+				function onKeyDown(e) {
+					var keyCode = e.keyCode;
+					if (keyCode == teclaWKeyCode) {
+						teclasPressionadas.w = true;
+					} else if (keyCode == teclaSKeyCode) {
+						teclasPressionadas.s = true;
+					}
+				}
+				
+				function onKeyUp(e) {
+					var keyCode = e.keyCode;
+					if (keyCode == teclaWKeyCode) {
+						teclasPressionadas.w = false;
+					} else if (keyCode == teclaSKeyCode) {
+						teclasPressionadas.s = false;
+					}
+				}
+				
+				function loopPrincipal() {
+					atualizaModelo();
+					renderizaTela();
+				}
+				
+				function atualizaModelo() {
+					if (teclasPressionadas.w) {
+						var tabuaYNovo = tabua.y - tabuaYDeltaPorTick;
+						tabua.y = Math.max(tabuaYMinimo, tabuaYNovo);
+					}
+					if (teclasPressionadas.s) {
+						var tabuaYNovo = tabua.y + tabuaYDeltaPorTick;
+						tabua.y = Math.min(tabuaYMaximo, tabuaYNovo);
+					}
+				}
+				
+				function renderizaTela() {
+					renderizaFundoDaTela();
+					renderizaTabua();
+				}
+				
+				function renderizaFundoDaTela() {
+					contexto.setTransform(1, 0, 0, 1, 0, 0);
+					contexto.fillStyle = "#00FF66";
+					contexto.fillRect(0, 0, canvasLargura, canvasAltura);
+				}
+				
+				function renderizaTabua() {
+					var tabuaX = tabua.x;
+					var tabuaY = tabua.y;
+					contexto.drawImage(tabuaImagem, tabuaX, tabuaY);
+				}
+			}
+			
+			window.addEventListener("load", eventoJanelaCarregada, false);
+
+		</script>
+	</head>
+	<body>
+		<div>
+			<canvas id="canvasUm" width="400" height="230">
+				Seu navegador não suporta o objeto Canvas da especificação HTML 5.
+			</canvas>
+		</div>
+	</body>
+</html>

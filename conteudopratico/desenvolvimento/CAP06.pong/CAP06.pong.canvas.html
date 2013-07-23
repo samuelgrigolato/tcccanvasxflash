@@ -1,0 +1,275 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>CAP06 - Pong</title>
+		<style>
+		
+			body {
+			  margin: 0;
+			}
+		
+		</style>
+		<script>
+			
+			function eventoJanelaCarregada() {
+				aplicacaoCanvas();
+			}
+			
+			function aplicacaoCanvas() {
+			
+				var canvas = document.getElementById("canvasUm");
+				
+				if (!canvas || !canvas.getContext) {
+					return;
+				}
+				
+				var canvasLargura = canvas.width;
+				var canvasAltura = canvas.height;
+				var contexto = canvas.getContext("2d");
+				
+				/* CONSTANTES */
+				var framesPorSegundo = 24;
+				var intervaloEntreFrames = 1000 / framesPorSegundo;
+				var teclaWKeyCode = 87;
+				var teclaSKeyCode = 83;
+				var teclaCimaKeyCode = 38;
+				var teclaBaixoKeyCode = 40;
+				var tabuasYMinimo = 10;
+				var tabuasYMaximo = 90;
+				var tabuasYDeltaPorTick = 2;
+				var bolaXInicial = 190;
+				var bolaYMinimo = 0;
+				var bolaXMaximo = 400;
+				var bolaYMaximo = 230;
+				var bolaVelocidadeX = 3;
+				var bolaVelocidadeY = 1;
+				var bolaRotacaoSegundos = 1;
+				var bolaRotacaoTicks = 1000 / intervaloEntreFrames * bolaRotacaoSegundos;
+				var bolaRotacaoGrausPorTick = 360 / bolaRotacaoTicks;
+				
+				/* MODELO */
+				var pontuacaoJogador1 = 0;
+				var pontuacaoJogador2 = 0;
+				var teclaWPressionada = false;
+				var teclaSPressionada = false;
+				var teclaCimaPressionada = false;
+				var teclaBaixoPressionada = false;
+				var bolaVelocidadeAtualX = bolaVelocidadeX;
+				var bolaVelocidadeAtualY = bolaVelocidadeY;
+				var tabuaImagemCarregada = false;
+				var bolaImagemCarregada = false;
+				
+				var tabua1 = { x: 20, y: 50 };
+				var tabua2 = { x: 345, y: 50 };
+				var bola = { x: 190, y: 105, anguloEmGraus: 0 };
+				
+				/* EVENTOS DE TECLADO */
+				
+				window.addEventListener("keydown", onKeyDown, true);
+				window.addEventListener("keyup", onKeyUp, true);
+				
+				function onKeyDown(e) {
+					var keyCode = e.keyCode;
+					if (keyCode == teclaWKeyCode) {
+						teclaWPressionada = true;
+					} else if (keyCode == teclaSKeyCode) {
+						teclaSPressionada = true;
+					} else if (keyCode == teclaCimaKeyCode) {
+						teclaCimaPressionada = true;
+					} else if (keyCode == teclaBaixoKeyCode) {
+						teclaBaixoPressionada = true;
+					}
+				}
+				
+				function onKeyUp(e) {
+					var keyCode = e.keyCode;
+					if (keyCode == teclaWKeyCode) {
+						teclaWPressionada = false;
+					} else if (keyCode == teclaSKeyCode) {
+						teclaSPressionada = false;
+					} else if (keyCode == teclaCimaKeyCode) {
+						teclaCimaPressionada = false;
+					} else if (keyCode == teclaBaixoKeyCode) {
+						teclaBaixoPressionada = false;
+					}
+				}
+				
+				/* CARGA DOS RECURSOS */
+				
+				var tabuaImagem = new Image();
+				tabuaImagem.addEventListener('load', imagemTabuaCarregada, false);
+				tabuaImagem.src = "../GERAL.imagensdiversas/tabua.png";
+				
+				var bolaImagem = new Image();
+				bolaImagem.addEventListener('load', imagemBolaCarregada, false);
+				bolaImagem.src = "../GERAL.imagensdiversas/bola.png";
+			
+				function imagemTabuaCarregada() {
+					tabuaImagemCarregada = true;
+					if (tabuaImagemCarregada && bolaImagemCarregada) {
+						setInterval(loopPrincipal, intervaloEntreFrames);
+					}
+				}
+			
+				function imagemBolaCarregada() {
+					bolaImagemCarregada = true;
+					if (tabuaImagemCarregada && bolaImagemCarregada) {
+						setInterval(loopPrincipal, intervaloEntreFrames);
+					}
+				}
+				
+				/* LOOP PRINCIPAL */
+				
+				function loopPrincipal() {
+					atualizaModelo();
+					renderizaTela();
+				}
+				
+				/* ATUALIZAÇÃO DE MODELO */
+				
+				function atualizaModelo() {
+					atualizaPosicaoTabua(tabua1, teclaWPressionada, teclaSPressionada);
+					atualizaPosicaoTabua(tabua2, teclaCimaPressionada, teclaBaixoPressionada);
+					atualizaPosicaoBola();
+					atualizaRotacaoBola();
+					processaColisaoBola();
+					processaPonto();
+				}
+				
+				function atualizaRotacaoBola() {
+					if (bola.anguloEmGraus < 360) {
+						bola.anguloEmGraus = bola.anguloEmGraus + bolaRotacaoGrausPorTick;
+					} else {
+						bola.anguloEmGraus = 0;
+					}				
+				}
+				
+				function processaColisaoBola() {
+					if (bolaColidiuComTabua(tabua1)) {
+						bolaVelocidadeAtualX = bolaVelocidadeX;
+					} else if (bolaColidiuComTabua(tabua2)) {
+						bolaVelocidadeAtualX = -bolaVelocidadeX;
+					}
+					if (bola.y <= bolaYMinimo) {
+						bolaVelocidadeAtualY = bolaVelocidadeY;
+					} else if (bola.y + bolaImagem.height >= bolaYMaximo) {
+						bolaVelocidadeAtualY = -bolaVelocidadeY;
+					}
+				}
+
+				function bolaColidiuComTabua(tabua) {
+					return pontoDentroDoRetangulo(bola.x, bola.y, tabua)
+						|| pontoDentroDoRetangulo(bola.x + bolaImagem.width, bola.y, tabua)
+						|| pontoDentroDoRetangulo(bola.x, bola.y + bolaImagem.height, tabua)
+						|| pontoDentroDoRetangulo(bola.x + bolaImagem.width, bola.y + bolaImagem.height, tabua);
+				}
+
+				function pontoDentroDoRetangulo(px, py, tabua) {
+					return (px >= tabua.x && px <= tabua.x + tabuaImagem.width)
+						&& (py >= tabua.y && py <= tabua.y + tabuaImagem.height);
+				}
+				
+				function processaPonto() {
+					if (bola.x <= 0) {
+						pontuacaoJogador2++;
+						bola.x = bolaXInicial;
+					}
+					if (bola.x + bolaImagem.width >= 400) {
+						pontuacaoJogador1++;
+						bola.x = bolaXInicial;
+					}
+				}
+				
+				function atualizaPosicaoBola() {
+					bola.x = bola.x + bolaVelocidadeAtualX;
+					bola.y = bola.y + bolaVelocidadeAtualY;
+				}
+				
+				function atualizaPosicaoTabua(tabua, paraCima, paraBaixo) {
+					var tabuaYNovo;
+					if (paraCima) {
+						tabuaYNovo = tabua.y - tabuasYDeltaPorTick;
+						tabua.y = Math.max(tabuaYNovo, tabuasYMinimo);
+					}
+					if (paraBaixo) {
+						tabuaYNovo = tabua.y + tabuasYDeltaPorTick;
+						tabua.y = Math.min(tabuaYNovo, tabuasYMaximo);
+					}
+				}
+				
+				/* RENDERIZAÇÃO DA TELA */
+				
+				function renderizaTela() {
+					renderizaFundoDaTela();
+					renderizaPontuacao();
+					renderizaTabuas();
+					renderizaBola();
+				}
+				
+				function renderizaFundoDaTela() {
+				
+					contexto.setTransform(1, 0, 0, 1, 0, 0);
+					contexto.fillStyle = "#00FF66";
+					contexto.fillRect(0, 0, canvasLargura, canvasAltura);
+					
+					var linhaXInicial = 200;
+					var linhaYInicial = 10;
+					var linhaXFinal = 200;
+					var linhaYFinal = 220;
+					
+					contexto.strokeStyle = "#FFFFFF";
+					contexto.beginPath();
+					contexto.moveTo(linhaXInicial, linhaYInicial);
+					contexto.lineTo(linhaXFinal, linhaYFinal);
+					contexto.closePath();
+					contexto.stroke();
+					
+				}
+				
+				function renderizaPontuacao() {
+				
+					var pontuacaoJogador1X = 160;
+					var pontuacaoJogador1Y = 40;
+					var pontuacaoJogador2X = 220;
+					var pontuacaoJogador2Y = 40;
+				
+					contexto.setTransform(1, 0, 0, 1, 0, 0);
+					contexto.font = "30pt Tahoma";
+					
+					contexto.fillStyle = "#00F";
+					contexto.fillText(pontuacaoJogador1, pontuacaoJogador1X, pontuacaoJogador1Y);
+					
+					contexto.fillStyle = "#F00";
+					contexto.fillText(pontuacaoJogador2, pontuacaoJogador2X, pontuacaoJogador2Y);
+				
+				}
+				
+				function renderizaTabuas() {
+					contexto.setTransform(1, 0, 0, 1, 0, 0);
+					contexto.drawImage(tabuaImagem, tabua1.x, tabua1.y);
+					contexto.drawImage(tabuaImagem, tabua2.x, tabua2.y);
+				}
+				
+				function renderizaBola() {
+					var bolaRotacaoEmRadianos = bola.anguloEmGraus * Math.PI / 180;
+					contexto.setTransform(1, 0, 0, 1, 0, 0);
+					contexto.translate(bola.x, bola.y);
+					contexto.rotate(bolaRotacaoEmRadianos);
+					contexto.drawImage(bolaImagem, - bolaImagem.width / 2, - bolaImagem.height / 2);
+				}
+				
+			}
+			
+			window.addEventListener("load", eventoJanelaCarregada, false);
+
+		</script>
+	</head>
+	<body>
+		<div>
+			<canvas id="canvasUm" width="400" height="230">
+				Seu navegador não suporta o objeto Canvas da especificação HTML 5.
+			</canvas>
+		</div>
+	</body>
+</html>
